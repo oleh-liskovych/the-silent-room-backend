@@ -10,11 +10,9 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
 import java.util.*
 
-fun Route.userRoutes() {
-    val userService by inject<UserService>()
+fun Route.userRoutes(userService: UserService) {
 
     route("/api/users") {
         post {

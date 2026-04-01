@@ -6,11 +6,9 @@ import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
 import java.util.*
 
-fun Route.chatRoutes() {
-    val chatService by inject<ChatService>()
+fun Route.chatRoutes(chatService: ChatService) {
 
     authenticate("auth-jwt") {
         route("/api/rooms") {
