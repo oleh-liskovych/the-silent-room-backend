@@ -1,0 +1,35 @@
+# fly.toml — Fly.io configuration for The Silent Room Backend
+#
+# To deploy:
+#   1. Install flyctl: https://fly.io/docs/hands-on/install-flyctl/
+#   2. Run: fly launch --copy-config (first time only)
+#   3. Create a Postgres database: fly postgres create
+#   4. Attach it: fly postgres attach <db-app-name>
+#   5. Set secrets:
+#        fly secrets set JWT_SECRET="your-secure-jwt-secret"
+#   6. Deploy: fly deploy
+
+app = "the-silent-room-backend"
+primary_region = "iad"
+
+[build]
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
