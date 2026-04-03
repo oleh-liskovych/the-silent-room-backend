@@ -173,6 +173,32 @@ class ChatService {
         }
     }
 
+    fun getDirectRoomBetweenUsers(userId1: UUID, userId2: UUID): RoomResponse? {
+        return transaction {
+            val user1Rooms = RoomMembers.selectAll()
+                .where { RoomMembers.userId eq userId1 }
+                .map { it[RoomMembers.roomId].value }
+                .toSet()
+
+            val user2Rooms = RoomMembers.selectAll()
+                .where { RoomMembers.userId eq userId2 }
+                .map { it[RoomMembers.roomId].value }
+                .toSet()
+
+            val commonRoomIds = user1Rooms.intersect(user2Rooms)
+
+            for (roomId in commonRoomIds) {
+                val room = Rooms.selectAll().where {
+                    (Rooms.id eq roomId) and (Rooms.isGroup eq false)
+                }.singleOrNull() ?: continue
+
+                return@transaction getRoomById(roomId)
+            }
+
+            null
+        }
+    }
+
     fun isRoomMember(roomId: UUID, userId: UUID): Boolean {
         return transaction {
             RoomMembers.selectAll().where {

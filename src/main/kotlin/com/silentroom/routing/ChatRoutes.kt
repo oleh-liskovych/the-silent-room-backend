@@ -35,6 +35,19 @@ fun Route.chatRoutes(chatService: ChatService) {
                 }
             }
 
+            get("/direct/{userId}") {
+                val uid = UUID.fromString(call.userId())
+                val otherUserId = call.parameters["userId"]?.let { UUID.fromString(it) }
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "User ID required"))
+
+                val room = chatService.getDirectRoomBetweenUsers(uid, otherUserId)
+                if (room != null) {
+                    call.respond(room)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "No direct room found with this user"))
+                }
+            }
+
             get("/{id}/messages") {
                 val uid = UUID.fromString(call.userId())
                 val roomId = call.parameters["id"]?.let { UUID.fromString(it) }
